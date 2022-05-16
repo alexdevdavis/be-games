@@ -10,4 +10,3 @@ To run this API locally, create two files:
 * .env.test with PGDATABASE=NAME_OF_TEST_DATABASE
 
 Find more on the configuration of PGDATABASE in 'connection.js' file.
-
