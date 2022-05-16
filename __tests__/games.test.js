@@ -4,7 +4,6 @@ const app = require("../app.js");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
-require("jest-sorted");
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -25,4 +24,5 @@ describe("GET /api/categories", () => {
         });
       });
   });
+  test("404: not found", () => {});
 });
