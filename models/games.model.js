@@ -10,7 +10,9 @@ exports.fetchCategories = () => {
 };
 
 exports.fetchReviewById = (review_id) => {
-  if (parseInt(review_id) === NaN) {
+  const id = parseInt(review_id);
+  if (id === NaN) {
+    console.log("did we get in this error condition?");
     return Promise.reject({ status: 400, message: "bad request" });
   } else {
     return db

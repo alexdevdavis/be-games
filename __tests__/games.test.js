@@ -46,12 +46,20 @@ describe("GET /api/reviews/:review_id", () => {
         });
       });
   });
-  test("404: returns an error when passed an review_id not in the reviews table", () => {
+  test("404: returns an error when passed a review_id not in the reviews table", () => {
     return request(app)
       .get("/api/reviews/55")
       .expect(404)
       .then((response) => {
         expect(response.text).toBe("not found");
+      });
+  });
+  test("400: returns an error when passed an invalid parametric endpoint review_id", () => {
+    return request(app)
+      .get("/api/reviews/sausage")
+      .expect(400)
+      .then((response) => {
+        expect(response.text).toBe("bad request");
       });
   });
 });
