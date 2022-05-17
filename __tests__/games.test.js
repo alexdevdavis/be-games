@@ -162,3 +162,22 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+describe("404: path not found", () => {
+  test("404: returns an error message when client accesses an invalid endpoint", () => {
+    return request(app)
+      .get("/api/reeeviews")
+      .expect(404)
+      .then((response) => {
+        expect(response.text).toBe("path not found");
+      });
+  });
+  test("404: returns an error message when client accesses an invalid endpoint", () => {
+    return request(app)
+      .get("/aypeei")
+      .expect(404)
+      .then((response) => {
+        expect(response.text).toBe("path not found");
+      });
+  });
+});

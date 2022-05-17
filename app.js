@@ -20,6 +20,10 @@ app.patch("/api/reviews/:review_id", patchReviewVotesById);
 app.get("/api/users", getAllUsers);
 
 //ERRORS
+app.use("/*", (req, res, next) => {
+  res.status(404).send("path not found");
+});
+
 app.use((err, req, res, next) => {
   if (err.status === 404) {
     res.status(err.status).send(err.message);
