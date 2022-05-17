@@ -19,5 +19,7 @@ exports.patchReviewVotesById = (req, res, next) => {
     .then((updated_review) => {
       res.status(200).send({ updated_review });
     })
-    .catch(next);
+    .catch((err) => {
+      next(err);
+    });
 };

@@ -54,7 +54,7 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/55")
       .expect(404)
       .then((response) => {
-        expect(response.text).toBe("not found");
+        expect(response.text).toBe("no such review");
       });
   });
   test("400: returns an error when passed an invalid parametric endpoint review_id", () => {
@@ -68,8 +68,8 @@ describe("GET /api/reviews/:review_id", () => {
 });
 
 describe("PATCH /api/reviews/:review_id", () => {
+  const voteUpdate = { inc_votes: 3 };
   test("200: returns a review object with votes updated", () => {
-    const voteUpdate = { inc_votes: 3 };
     return request(app)
       .patch("/api/reviews/2")
       .send(voteUpdate)
@@ -86,6 +86,52 @@ describe("PATCH /api/reviews/:review_id", () => {
           created_at: expect.any(String),
           votes: 8,
         });
+      });
+  });
+  test("200: returns a review object with negative vote value if passed minus number takes votes below zero", () => {
+    return request(app)
+      .patch("/api/reviews/2")
+      .send({ inc_votes: -41 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.updated_review).toMatchObject({
+          title: "Jenga",
+          designer: "Leslie Scott",
+          owner: "philippaclaire9",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          review_body: "Fiddly fun for all the family",
+          category: "dexterity",
+          created_at: expect.any(String),
+          votes: -36,
+        });
+      });
+  });
+  test("404: returns an error message if passed an unassigned review id", () => {
+    return request(app)
+      .patch("/api/reviews/42")
+      .send(voteUpdate)
+      .expect(404)
+      .then((response) => {
+        expect(response.text).toBe("no such review");
+      });
+  });
+  test("400: returns an error message if passed an invalid review id", () => {
+    return request(app)
+      .patch("/api/reviews/winklepickers")
+      .send({ inc_votes: 85 })
+      .expect(400)
+      .then((response) => {
+        expect(response.text).toBe("bad request");
+      });
+  });
+  test("400: returns an error message if passed an invalid vote value", () => {
+    return request(app)
+      .patch("/api/reviews/3")
+      .send({ inc_votes: "pickles" })
+      .expect(400)
+      .then((response) => {
+        expect(response.text).toBe("invalid vote request");
       });
   });
 });
