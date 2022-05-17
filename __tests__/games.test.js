@@ -35,13 +35,13 @@ describe("GET /api/reviews/:review_id", () => {
       .then(({ body }) => {
         expect(body.review).toMatchObject({
           review_id: 1,
-          title: 'Agricola',
-    designer: 'Uwe Rosenberg',
-    owner: 'mallionaire',
-    review_img_url:
-      'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
-    review_body: 'Farmyard fun!',
-    category: 'euro game',
+          title: "Agricola",
+          designer: "Uwe Rosenberg",
+          owner: "mallionaire",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          review_body: "Farmyard fun!",
+          category: "euro game",
           votes: expect.any(Number),
           category: expect.any(String),
           owner: expect.any(String),
@@ -63,6 +63,29 @@ describe("GET /api/reviews/:review_id", () => {
       .expect(400)
       .then((response) => {
         expect(response.text).toBe("bad request");
+      });
+  });
+});
+
+describe("PATCH /api/reviews/:review_id", () => {
+  test("201: returns a review object with votes updated", () => {
+    const voteUpdate = { inc_votes: 3 };
+    return request(app)
+      .patch("/api/reviews/2")
+      .send(voteUpdate)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.updated_review).toEqual({
+          title: "Jenga",
+          designer: "Leslie Scott",
+          owner: "philippaclaire9",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          review_body: "Fiddly fun for all the family",
+          category: "dexterity",
+          created_at: new Date(1610964101251),
+          votes: 8,
+        });
       });
   });
 });

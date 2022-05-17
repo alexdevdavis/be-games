@@ -8,3 +8,8 @@ exports.getReviewById = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.patchReviewVotesById = (req, res, next) => {
+  const {review_id} = req.params;
+  const {inc_votes}
+}
