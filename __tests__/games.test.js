@@ -68,14 +68,14 @@ describe("GET /api/reviews/:review_id", () => {
 });
 
 describe("PATCH /api/reviews/:review_id", () => {
-  test("201: returns a review object with votes updated", () => {
+  test("200: returns a review object with votes updated", () => {
     const voteUpdate = { inc_votes: 3 };
     return request(app)
       .patch("/api/reviews/2")
       .send(voteUpdate)
-      .expect(201)
+      .expect(200)
       .then(({ body }) => {
-        expect(body.updated_review).toEqual({
+        expect(body.updated_review).toMatchObject({
           title: "Jenga",
           designer: "Leslie Scott",
           owner: "philippaclaire9",
@@ -83,7 +83,7 @@ describe("PATCH /api/reviews/:review_id", () => {
             "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
           review_body: "Fiddly fun for all the family",
           category: "dexterity",
-          created_at: new Date(1610964101251),
+          created_at: expect.any(String),
           votes: 8,
         });
       });

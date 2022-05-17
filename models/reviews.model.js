@@ -17,3 +17,13 @@ exports.fetchReviewById = (review_id) => {
       });
   }
 };
+
+exports.updateReviewVotesById = (review_id, inc_votes) => {
+  let queryStr = `UPDATE reviews SET votes = votes + ${inc_votes} `;
+
+  queryStr += `WHERE review_id = $1 RETURNING *`;
+
+  return db.query(queryStr, [review_id]).then((review) => {
+    return review.rows[0];
+  });
+};
