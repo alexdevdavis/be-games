@@ -4,6 +4,7 @@ const app = require("../app.js");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
+const { forEach } = require("../db/data/test-data/categories.js");
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -24,7 +25,6 @@ describe("GET /api/categories", () => {
         });
       });
   });
-  test("404: not found", () => {});
 });
 
 describe("GET /api/reviews/:review_id", () => {
@@ -134,13 +134,31 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(response.text).toBe("invalid vote request");
       });
   });
-  test.only("400: returns an error message if passed an invalid key on PATCH object", () => {
+  test("400: returns an error message if passed an invalid key on PATCH object", () => {
     return request(app)
       .patch("/api/reviews/3")
       .send({ remy_martin: 19 })
       .expect(400)
       .then((response) => {
         expect(response.text).toBe("invalid vote request");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  test("200: returns an object with an array of all users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users).toHaveLength(4);
+        body.users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
       });
   });
 });
