@@ -4,22 +4,22 @@ exports.fetchReviewById = async (review_id) => {
   if (isNaN(review_id)) {
     return Promise.reject({ status: 400, message: "bad request" });
   }
-  const reviewComments = await db.query(
-    `SELECT * FROM comments WHERE review_id = $1`,
+  const reviewWithComments = await db.query(
+    `SELECT reviews.* , 
+    COUNT(comments.review_id)::INT AS comment_count 
+    FROM reviews  
+    LEFT JOIN comments 
+    ON reviews.review_id = comments.review_id 
+    WHERE reviews.review_id = $1 
+    GROUP BY reviews.review_id`,
     [review_id]
   );
-  const queryReview = await db.query(
-    `SELECT * FROM reviews WHERE review_id = $1`,
-    [review_id]
-  );
+  const returnedReview = reviewWithComments.rows[0];
 
-  if (queryReview.rows.length === 0) {
+  if (!returnedReview) {
     return Promise.reject({ status: 404, message: "no such review" });
   }
-  const returnedReview = queryReview.rows[0];
-  returnedReview.comment_count = reviewComments.rows.length;
-
-  return returnedReview;
+  return reviewWithComments.rows[0];
 };
 
 exports.updateReviewVotesById = async (review_id, inc_votes) => {
