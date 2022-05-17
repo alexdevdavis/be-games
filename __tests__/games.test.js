@@ -33,20 +33,30 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/1")
       .expect(200)
       .then(({ body }) => {
-        expect(body.review).toMatchObject({
-          review_id: 1,
-          title: "Agricola",
-          designer: "Uwe Rosenberg",
-          owner: "mallionaire",
-          review_img_url:
-            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-          review_body: "Farmyard fun!",
-          category: "euro game",
-          votes: expect.any(Number),
-          category: expect.any(String),
-          owner: expect.any(String),
-          created_at: expect.any(String),
-        });
+        expect(body.review).toEqual(
+          expect.objectContaining({
+            review_id: 1,
+            title: "Agricola",
+            designer: "Uwe Rosenberg",
+            owner: "mallionaire",
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            review_body: "Farmyard fun!",
+            category: "euro game",
+            votes: expect.any(Number),
+            category: expect.any(String),
+            owner: expect.any(String),
+            created_at: expect.any(String),
+          })
+        );
+      });
+  });
+  test("200: returns an object with a comment_count property", () => {
+    return request(app)
+      .get("/api/reviews/2")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.review.comment_count).toBe(3);
       });
   });
   test("404: returns an error when passed a review_id not in the reviews table", () => {
