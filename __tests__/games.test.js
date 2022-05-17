@@ -134,4 +134,13 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(response.text).toBe("invalid vote request");
       });
   });
+  test.only("400: returns an error message if passed an invalid key on PATCH object", () => {
+    return request(app)
+      .patch("/api/reviews/3")
+      .send({ remy_martin: 19 })
+      .expect(400)
+      .then((response) => {
+        expect(response.text).toBe("invalid vote request");
+      });
+  });
 });
