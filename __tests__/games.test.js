@@ -14,10 +14,10 @@ describe("GET /api/categories", () => {
     return request(app)
       .get("/api/categories")
       .expect(200)
-      .then(({ body }) => {
-        expect(Array.isArray(body.categories)).toBe(true);
-        expect(body.categories).toHaveLength(4);
-        body.categories.forEach((category) => {
+      .then(({ body: { categories } }) => {
+        expect(Array.isArray(categories)).toBe(true);
+        expect(categories).toHaveLength(4);
+        categories.forEach((category) => {
           expect(category).toMatchObject({
             slug: expect.any(String),
             description: expect.any(String),
@@ -40,10 +40,8 @@ describe("GET /api/reviews", () => {
             expect.objectContaining({
               review_id: expect.any(Number),
               title: expect.any(String),
-              designer: expect.any(String),
               owner: expect.any(String),
               review_img_url: expect.any(String),
-              review_body: expect.any(String),
               category: expect.any(String),
               votes: expect.any(Number),
               created_at: expect.any(String),
@@ -53,13 +51,15 @@ describe("GET /api/reviews", () => {
         });
       });
   });
+
   test("200: return object's array is sorted by date, in descending order", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
       .then(({ body: { reviews } }) => {
-        expect(reviews).toBeSortedBy('date', {descending: true});
-  })
+        expect(reviews).toBeSortedBy("created_at", { descending: true });
+      });
+  });
 });
 
 describe("GET /api/reviews/:review_id", () => {
@@ -67,8 +67,8 @@ describe("GET /api/reviews/:review_id", () => {
     return request(app)
       .get("/api/reviews/1")
       .expect(200)
-      .then(({ body }) => {
-        expect(body.review).toEqual(
+      .then(({ body: { review } }) => {
+        expect(review).toEqual(
           expect.objectContaining({
             review_id: 1,
             title: "Agricola",
@@ -88,24 +88,24 @@ describe("GET /api/reviews/:review_id", () => {
     return request(app)
       .get("/api/reviews/2")
       .expect(200)
-      .then(({ body }) => {
-        expect(body.review.comment_count).toBe(3);
+      .then(({ body: { review } }) => {
+        expect(review.comment_count).toBe(3);
       });
   });
   test("404: returns an error when passed a review_id not in the reviews table", () => {
     return request(app)
       .get("/api/reviews/55")
       .expect(404)
-      .then((response) => {
-        expect(response.text).toBe("no such review");
+      .then(({ text }) => {
+        expect(text).toBe("no such review");
       });
   });
   test("400: returns an error when passed an invalid parametric endpoint review_id", () => {
     return request(app)
       .get("/api/reviews/sausage")
       .expect(400)
-      .then((response) => {
-        expect(response.text).toBe("bad request");
+      .then(({ text }) => {
+        expect(text).toBe("bad request");
       });
   });
 });
@@ -117,8 +117,8 @@ describe("PATCH /api/reviews/:review_id", () => {
       .patch("/api/reviews/2")
       .send(voteUpdate)
       .expect(200)
-      .then(({ body }) => {
-        expect(body.updated_review).toMatchObject({
+      .then(({ body: { updated_review } }) => {
+        expect(updated_review).toMatchObject({
           title: "Jenga",
           designer: "Leslie Scott",
           owner: "philippaclaire9",
@@ -126,7 +126,7 @@ describe("PATCH /api/reviews/:review_id", () => {
             "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
           review_body: "Fiddly fun for all the family",
           category: "dexterity",
-          created_at: expect.any(String),
+          created_at: "2021-01-18T10:01:41.251Z",
           votes: 8,
         });
       });
@@ -136,8 +136,8 @@ describe("PATCH /api/reviews/:review_id", () => {
       .patch("/api/reviews/2")
       .send({ inc_votes: -41 })
       .expect(200)
-      .then(({ body }) => {
-        expect(body.updated_review).toMatchObject({
+      .then(({ body: { updated_review } }) => {
+        expect(updated_review).toMatchObject({
           title: "Jenga",
           designer: "Leslie Scott",
           owner: "philippaclaire9",
@@ -155,8 +155,8 @@ describe("PATCH /api/reviews/:review_id", () => {
       .patch("/api/reviews/42")
       .send(voteUpdate)
       .expect(404)
-      .then((response) => {
-        expect(response.text).toBe("no such review");
+      .then(({ text }) => {
+        expect(text).toBe("no such review");
       });
   });
   test("400: returns an error message if passed an invalid review id", () => {
@@ -164,8 +164,8 @@ describe("PATCH /api/reviews/:review_id", () => {
       .patch("/api/reviews/winklepickers")
       .send({ inc_votes: 85 })
       .expect(400)
-      .then((response) => {
-        expect(response.text).toBe("bad request");
+      .then(({ text }) => {
+        expect(text).toBe("bad request");
       });
   });
   test("400: returns an error message if passed an invalid vote value", () => {
@@ -173,8 +173,8 @@ describe("PATCH /api/reviews/:review_id", () => {
       .patch("/api/reviews/3")
       .send({ inc_votes: "pickles" })
       .expect(400)
-      .then((response) => {
-        expect(response.text).toBe("invalid vote request");
+      .then(({ text }) => {
+        expect(text).toBe("invalid vote request");
       });
   });
   test("400: returns an error message if passed an invalid key on PATCH object", () => {
@@ -182,8 +182,8 @@ describe("PATCH /api/reviews/:review_id", () => {
       .patch("/api/reviews/3")
       .send({ remy_martin: 19 })
       .expect(400)
-      .then((response) => {
-        expect(response.text).toBe("invalid vote request");
+      .then(({ text }) => {
+        expect(text).toBe("invalid vote request");
       });
   });
 });
@@ -193,10 +193,10 @@ describe("GET /api/users", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
-      .then(({ body }) => {
-        expect(Array.isArray(body.users)).toBe(true);
-        expect(body.users).toHaveLength(4);
-        body.users.forEach((user) => {
+      .then(({ body: { users } }) => {
+        expect(Array.isArray(users)).toBe(true);
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
           expect(user).toMatchObject({
             username: expect.any(String),
             name: expect.any(String),
@@ -212,16 +212,16 @@ describe("404: path not found", () => {
     return request(app)
       .get("/api/reeeviews")
       .expect(404)
-      .then((response) => {
-        expect(response.text).toBe("path not found");
+      .then(({ text }) => {
+        expect(text).toBe("path not found");
       });
   });
   test("404: returns an error message when client accesses an invalid endpoint", () => {
     return request(app)
       .get("/aypeei")
       .expect(404)
-      .then((response) => {
-        expect(response.text).toBe("path not found");
+      .then(({ text }) => {
+        expect(text).toBe("path not found");
       });
   });
 });
