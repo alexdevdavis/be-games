@@ -47,3 +47,11 @@ exports.updateReviewVotesById = async (review_id, inc_votes) => {
   const updatedReview = await db.query(queryStr, [review_id]);
   return updatedReview.rows[0];
 };
+
+exports.fetchCommentsByReviewId = async (review_id) => {
+  const reviewComments = await db.query(
+    `SELECT * FROM comments WHERE review_id = $1`,
+    [review_id]
+  );
+  return reviewComments.rows;
+};
