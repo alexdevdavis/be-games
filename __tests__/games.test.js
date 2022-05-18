@@ -4,7 +4,7 @@ const app = require("../app.js");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
-const { forEach } = require("../db/data/test-data/categories.js");
+require("jest-sorted");
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -25,6 +25,41 @@ describe("GET /api/categories", () => {
         });
       });
   });
+});
+
+describe("GET /api/reviews", () => {
+  test("200: returns an object with an array of review objects", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(Array.isArray(reviews)).toBe(true);
+        expect(reviews.length).toBe(13);
+        reviews.forEach((review) => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              review_id: expect.any(Number),
+              title: expect.any(String),
+              designer: expect.any(String),
+              owner: expect.any(String),
+              review_img_url: expect.any(String),
+              review_body: expect.any(String),
+              category: expect.any(String),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("200: return object's array is sorted by date, in descending order", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy('date', {descending: true});
+  })
 });
 
 describe("GET /api/reviews/:review_id", () => {
