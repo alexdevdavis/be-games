@@ -61,7 +61,7 @@ describe("GET /api/reviews", () => {
   });
   test("200: return object's array can be sorted according to client query", () => {
     return request(app)
-      .get("/api/reviews?sort_by=owner&order=asc")
+      .get("/api/reviews?sort_by=owner&order_by=asc")
       .expect(200)
       .then(({ body: { reviews } }) => {
         expect(reviews).toBeSortedBy("owner", { ascending: true });
@@ -78,6 +78,33 @@ describe("GET /api/reviews", () => {
         });
       });
   });
+  test("400: returns an error message when passed an invalid sort_by query", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=bearcuts")
+      .expect(400)
+      .then(({ text }) => {
+        expect(text).toBe("invalid sort by request");
+      });
+  });
+  test("400: returns an error message when passed an invalid order_by query", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=review_id&order_by=bread")
+      .expect(400)
+      .then(({ text }) => {
+        expect(text).toBe("invalid order by request");
+      });
+  });
+  test(
+    "404: returns an error message when passed a non-existent category",
+    () => {
+      return request(app)
+        .get("/api/reviews?sort_by=title&category=palm+oil")
+        .expect(404)
+        .then(({ text }) => {
+          expect(text).toBe("category not found");
+        });
+    }
+  );
 });
 
 describe("GET /api/reviews/:review_id", () => {
