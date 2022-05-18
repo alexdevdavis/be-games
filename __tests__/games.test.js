@@ -188,6 +188,30 @@ describe("PATCH /api/reviews/:review_id", () => {
   });
 });
 
+describe("GET /api/reviews/:review_id/comments", () => {
+  test("returns an object with an array of comments for identified review", () => {
+    return request(app)
+      .get("/api/reviews/3/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(Array.isArray(comments)).toBe(true);
+        expect(comments).toHaveLength(3);
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              review_id: 3,
+            })
+          );
+        });
+      });
+  });
+});
+
 describe("GET /api/users", () => {
   test("200: returns an object with an array of all users", () => {
     return request(app)
