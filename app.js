@@ -5,7 +5,8 @@ const {
   getAllReviews,
   getReviewById,
   patchReviewVotesById,
-  getCommentsByReviewId
+  getCommentsByReviewId,
+  postCommentByReviewId,
 } = require("./controllers/reviews.controller");
 
 const app = express();
@@ -17,8 +18,9 @@ app.get("/api/categories", getCategories);
 //REVIEWS
 app.get("/api/reviews", getAllReviews);
 app.get("/api/reviews/:review_id", getReviewById);
-app.get("/api/reviews/:review_id/comments", getCommentsByReviewId)
+app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 app.patch("/api/reviews/:review_id", patchReviewVotesById);
+app.post("/api/reviews/:review_id/comments", postCommentByReviewId);
 
 //USERS
 app.get("/api/users", getAllUsers);
@@ -45,7 +47,6 @@ app.use((err, req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  console.log(err);
   res.status(500).send({ msg: "internal server error" });
 });
 

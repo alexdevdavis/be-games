@@ -110,6 +110,84 @@ describe("GET /api/reviews/:review_id", () => {
   });
 });
 
+describe("POST /api/reviews/:review_id/comments", () => {
+  const postedComment = {
+    username: "mallionaire",
+    body: "This review is savage",
+  };
+  test("201: returns posted comment, and adds comment to comments db", () => {
+    return request(app)
+      .post("/api/reviews/4/comments")
+      .send(postedComment)
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            author: "mallionaire",
+            body: "This review is savage",
+            comment_id: 7,
+            review_id: 4,
+            votes: 0,
+            created_at: expect.any(String),
+          })
+        );
+      });
+  });
+
+  test("400: returns an error when passed an invalid review_id data type", () => {
+    return request(app)
+      .get("/api/reviews/sausage/comments")
+      .expect(400)
+      .then(({ text }) => {
+        expect(text).toBe("invalid review id request");
+      });
+  });
+
+  test("400: returns an error message if req.body is missing mandatory keys", () => {
+    const invalidKeys = {
+      usernaym: "mallionaire",
+      boty: "This review is savage",
+    };
+    return request(app)
+      .post("/api/reviews/4/comments")
+      .send(invalidKeys)
+      .expect(400)
+      .then(({ text }) => {
+        expect(text).toBe("invalid comment");
+      })
+      .then(() => {
+        return request(app)
+          .post("/api/reviews/4/comments")
+          .send({
+            username: "mallionaire",
+            boty: "This review is savage",
+          })
+          .expect(400)
+          .then(({ text }) => {
+            expect(text).toBe("invalid comment");
+          });
+      });
+  });
+  test("404: returns an error message if review_id in path doesn't exist", () => {
+    return request(app)
+      .post("/api/reviews/1066/comments")
+      .send(postedComment)
+      .expect(404)
+      .then(({ text }) => {
+        expect(text).toBe("review not found");
+      });
+  });
+  test("404: returns an error message if user doesn't exist in database", () => {
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send({ username: "malcolm hibblebottom", body: "This review is savage" })
+      .expect(404)
+      .then(({ text }) => {
+        expect(text).toBe("user not found");
+      });
+  });
+});
+
 describe("PATCH /api/reviews/:review_id", () => {
   const voteUpdate = { inc_votes: 3 };
   test("200: returns a review object with votes updated", () => {
