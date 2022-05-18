@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const format = require("pg-format");
 
 exports.fetchAllReviews = async () => {
   let queryStr = `SELECT reviews.owner, title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, COUNT(comments.review_id) ::INT AS comment_count
@@ -61,4 +62,18 @@ exports.fetchCommentsByReviewId = async (review_id) => {
     [review_id]
   );
   return reviewComments.rows;
+};
+
+exports.insertCommentByReviewId = async (review_id, username, body) => {
+  const nestedArr = [[review_id, username, body]];
+  const formattedQuery = format(
+    `INSERT INTO comments 
+    (review_id, author, body) 
+    VALUES 
+    %L
+    RETURNING *`,
+    nestedArr
+  );
+  const postedComment = await db.query(formattedQuery);
+  return postedComment.rows[0];
 };

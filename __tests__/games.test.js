@@ -110,6 +110,31 @@ describe("GET /api/reviews/:review_id", () => {
   });
 });
 
+describe("POST /api/reviews/:review_id/comments", () => {
+  const postedComment = {
+    username: "mallionaire",
+    body: "This review is savage",
+  };
+  test("201: returns posted comment, and adds comment to comments db", () => {
+    return request(app)
+      .post("/api/reviews/4/comments")
+      .send(postedComment)
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            author: "mallionaire",
+            body: "This review is savage",
+            comment_id: 7,
+            review_id: 4,
+            votes: 0,
+            created_at: expect.any(String),
+          })
+        );
+      });
+  });
+});
+
 describe("PATCH /api/reviews/:review_id", () => {
   const voteUpdate = { inc_votes: 3 };
   test("200: returns a review object with votes updated", () => {
