@@ -1,5 +1,6 @@
 const db = require("../db/connection");
 const format = require("pg-format");
+const { fetchAllUsers } = require("./users.model");
 
 exports.fetchAllReviews = async () => {
   let queryStr = `SELECT reviews.owner, title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, COUNT(comments.review_id) ::INT AS comment_count
@@ -65,6 +66,21 @@ exports.fetchCommentsByReviewId = async (review_id) => {
 };
 
 exports.insertCommentByReviewId = async (review_id, username, body) => {
+  if (!username || !body) {
+    return Promise.reject({
+      status: 400,
+      message: "invalid comment",
+    });
+  }
+  await this.fetchReviewById(review_id);
+
+  const userArray = await fetchAllUsers();
+  if (!userArray.find((user) => user.username === username)) {
+    return Promise.reject({
+      status: 404,
+      message: "user not found",
+    });
+  }
   const nestedArr = [[review_id, username, body]];
   const formattedQuery = format(
     `INSERT INTO comments 

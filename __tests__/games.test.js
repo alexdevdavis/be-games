@@ -133,6 +133,49 @@ describe("POST /api/reviews/:review_id/comments", () => {
         );
       });
   });
+  test("400: returns an error message if req.body is missing mandatory keys", () => {
+    const invalidKeys = {
+      usernaym: "mallionaire",
+      boty: "This review is savage",
+    };
+    return request(app)
+      .post("/api/reviews/4/comments")
+      .send(invalidKeys)
+      .expect(400)
+      .then(({ text }) => {
+        expect(text).toBe("invalid comment");
+      })
+      .then(() => {
+        return request(app)
+          .post("/api/reviews/4/comments")
+          .send({
+            username: "mallionaire",
+            boty: "This review is savage",
+          })
+          .expect(400)
+          .then(({ text }) => {
+            expect(text).toBe("invalid comment");
+          });
+      });
+  });
+  test("404: returns an error message if review_id in path doesn't exist", () => {
+    return request(app)
+      .post("/api/reviews/1066/comments")
+      .send(postedComment)
+      .expect(404)
+      .then(({ text }) => {
+        expect(text).toBe("review not found");
+      });
+  });
+  test("404: returns an error message if user doesn't exist in database", () => {
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send({ username: "malcolm hibblebottom", body: "This review is savage" })
+      .expect(404)
+      .then(({ text }) => {
+        expect(text).toBe("user not found");
+      });
+  });
 });
 
 describe("PATCH /api/reviews/:review_id", () => {
