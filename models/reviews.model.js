@@ -49,6 +49,12 @@ exports.updateReviewVotesById = async (review_id, inc_votes) => {
 };
 
 exports.fetchCommentsByReviewId = async (review_id) => {
+  if (isNaN(review_id)) {
+    return Promise.reject({
+      status: 400,
+      message: "invalid review id request",
+    });
+  }
   const reviewComments = await db.query(
     `SELECT * FROM comments WHERE review_id = $1`,
     [review_id]

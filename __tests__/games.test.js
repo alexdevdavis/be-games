@@ -189,7 +189,7 @@ describe("PATCH /api/reviews/:review_id", () => {
 });
 
 describe("GET /api/reviews/:review_id/comments", () => {
-  test("returns an object with an array of comments for identified review", () => {
+  test("200: returns an object with an array of comments for identified review", () => {
     return request(app)
       .get("/api/reviews/3/comments")
       .expect(200)
@@ -208,6 +208,14 @@ describe("GET /api/reviews/:review_id/comments", () => {
             })
           );
         });
+      });
+  });
+  test("400: returns an error message when request review_id data type is invalid", () => {
+    return request(app)
+      .get("/api/reviews/loudpurp/comments")
+      .expect(400)
+      .then(({ text }) => {
+        expect(text).toBe("invalid review id request");
       });
   });
 });
