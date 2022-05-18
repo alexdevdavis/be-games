@@ -2,6 +2,7 @@ const express = require("express");
 const { getCategories } = require("./controllers/categories.controller");
 const { getAllUsers } = require("./controllers/users.controller");
 const {
+  getAllReviews,
   getReviewById,
   patchReviewVotesById,
 } = require("./controllers/reviews.controller");
@@ -13,6 +14,7 @@ app.use(express.json());
 app.get("/api/categories", getCategories);
 
 //REVIEWS
+app.get("/api/reviews", getAllReviews);
 app.get("/api/reviews/:review_id", getReviewById);
 app.patch("/api/reviews/:review_id", patchReviewVotesById);
 
@@ -41,6 +43,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+  console.log(err);
   res.status(500).send({ msg: "internal server error" });
 });
 
