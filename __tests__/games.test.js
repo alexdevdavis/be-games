@@ -133,6 +133,16 @@ describe("POST /api/reviews/:review_id/comments", () => {
         );
       });
   });
+
+  test("400: returns an error when passed an invalid review_id data type", () => {
+    return request(app)
+      .get("/api/reviews/sausage/comments")
+      .expect(400)
+      .then(({ text }) => {
+        expect(text).toBe("invalid review id request");
+      });
+  });
+
   test("400: returns an error message if req.body is missing mandatory keys", () => {
     const invalidKeys = {
       usernaym: "mallionaire",
