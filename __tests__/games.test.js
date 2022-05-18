@@ -97,7 +97,7 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/55")
       .expect(404)
       .then(({ text }) => {
-        expect(text).toBe("no such review");
+        expect(text).toBe("review not found");
       });
   });
   test("400: returns an error when passed an invalid parametric endpoint review_id", () => {
@@ -156,7 +156,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .send(voteUpdate)
       .expect(404)
       .then(({ text }) => {
-        expect(text).toBe("no such review");
+        expect(text).toBe("review not found");
       });
   });
   test("400: returns an error message if passed an invalid review id", () => {
@@ -210,12 +210,28 @@ describe("GET /api/reviews/:review_id/comments", () => {
         });
       });
   });
+  test("200: returns an empty array if review_id is valid, but has no associated comments", () => {
+    return request(app)
+      .get("/api/reviews/4/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toHaveLength(0);
+      });
+  });
   test("400: returns an error message when request review_id data type is invalid", () => {
     return request(app)
       .get("/api/reviews/loudpurp/comments")
       .expect(400)
       .then(({ text }) => {
         expect(text).toBe("invalid review id request");
+      });
+  });
+  test("404: returns an error message when requested review_id does not exist", () => {
+    return request(app)
+      .get("/api/reviews/1984/comments")
+      .expect(404)
+      .then(({ text }) => {
+        expect(text).toBe("review not found");
       });
   });
 });

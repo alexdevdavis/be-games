@@ -30,7 +30,7 @@ exports.fetchReviewById = async (review_id) => {
   const returnedReview = reviewWithComments.rows[0];
 
   if (!returnedReview) {
-    return Promise.reject({ status: 404, message: "no such review" });
+    return Promise.reject({ status: 404, message: "review not found" });
   }
   return reviewWithComments.rows[0];
 };
@@ -55,6 +55,7 @@ exports.fetchCommentsByReviewId = async (review_id) => {
       message: "invalid review id request",
     });
   }
+  await this.fetchReviewById(review_id);
   const reviewComments = await db.query(
     `SELECT * FROM comments WHERE review_id = $1`,
     [review_id]
