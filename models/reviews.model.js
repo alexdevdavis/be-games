@@ -1,20 +1,25 @@
 const db = require("../db/connection");
 
 exports.fetchReviewById = async (review_id) => {
-  const id = parseInt(review_id);
-
-  if (isNaN(id)) {
+  if (isNaN(review_id)) {
     return Promise.reject({ status: 400, message: "bad request" });
   }
-  const queryReview = await db.query(
-    `SELECT * FROM reviews WHERE review_id = $1`,
+  const reviewWithComments = await db.query(
+    `SELECT reviews.* , 
+    COUNT(comments.review_id)::INT AS comment_count 
+    FROM reviews  
+    LEFT JOIN comments 
+    ON reviews.review_id = comments.review_id 
+    WHERE reviews.review_id = $1 
+    GROUP BY reviews.review_id`,
     [review_id]
   );
+  const returnedReview = reviewWithComments.rows[0];
 
-  if (queryReview.rows.length === 0) {
+  if (!returnedReview) {
     return Promise.reject({ status: 404, message: "no such review" });
   }
-  return queryReview.rows[0];
+  return reviewWithComments.rows[0];
 };
 
 exports.updateReviewVotesById = async (review_id, inc_votes) => {
