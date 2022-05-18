@@ -2,16 +2,27 @@ const db = require("../db/connection");
 const format = require("pg-format");
 const { fetchAllUsers } = require("./users.model");
 
-exports.fetchAllReviews = async () => {
+exports.fetchAllReviews = async (
+  sort_by = "created_at",
+  order = "DESC",
+  category
+) => {
+  const valuesArr = [];
   let queryStr = `SELECT reviews.owner, title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, COUNT(comments.review_id) ::INT AS comment_count
   FROM reviews
   LEFT JOIN comments
-  ON reviews.review_id = comments.review_id
-  GROUP BY reviews.review_id
-  ORDER BY reviews.created_at DESC
-  `;
+  ON reviews.review_id = comments.review_id `;
 
-  const allReviews = await db.query(queryStr);
+  if (category) {
+    queryStr += `WHERE category = $1`;
+    valuesArr.push(category);
+  }
+
+  queryStr += `GROUP BY reviews.review_id `;
+
+  queryStr += `ORDER BY reviews.${sort_by} ${order}`;
+
+  const allReviews = await db.query(queryStr, valuesArr);
   return allReviews.rows;
 };
 

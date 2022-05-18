@@ -51,13 +51,31 @@ describe("GET /api/reviews", () => {
         });
       });
   });
-
-  test("200: return object's array is sorted by date, in descending order", () => {
+  test("200: return object's array default sorting is by date, in descending order", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
       .then(({ body: { reviews } }) => {
         expect(reviews).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("200: return object's array can be sorted according to client query", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=owner&order=asc")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("owner", { ascending: true });
+      });
+  });
+  test("200: return object's array can be filtered according to client query", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=votes&order=desc&category=social+deduction")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("votes", { descending: true });
+        reviews.forEach((review) => {
+          expect(review.category).toBe("social deduction");
+        });
       });
   });
 });
