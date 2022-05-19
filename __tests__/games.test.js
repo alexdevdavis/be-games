@@ -14,11 +14,11 @@ describe("GET /api", () => {
     return request(app)
       .get("/api")
       .expect(200)
-      .then(({ body }) => {
-        const endpointKeys = Object.keys(body);
+      .then(({ body: { endpoints } }) => {
+        const endpointKeys = Object.keys(endpoints);
         expect(endpointKeys).toHaveLength(9);
         for (let i = 0; i < endpointKeys.length; i++) {
-          expect(body[endpointKeys[i]]).toEqual(
+          expect(endpoints[endpointKeys[i]]).toEqual(
             expect.objectContaining({
               description: expect.any(String),
               queries: expect.any(Array),
