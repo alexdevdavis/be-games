@@ -2,16 +2,57 @@ const db = require("../db/connection");
 const format = require("pg-format");
 const { fetchAllUsers } = require("./users.model");
 
-exports.fetchAllReviews = async () => {
-  let queryStr = `SELECT reviews.owner, title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, COUNT(comments.review_id) ::INT AS comment_count
+exports.fetchAllReviews = async (
+  sort_by = "created_at",
+  order_by = "DESC",
+  category
+) => {
+  const valuesArr = [];
+  //VALIDATE SORT_BY
+  const validSorts = await db.query(
+    `SELECT column_name FROM INFORMATION_SCHEMA. COLUMNS WHERE TABLE_NAME = 'reviews'`
+  );
+  const headerArray = validSorts.rows.map((element) => element.column_name);
+
+  if (!headerArray.includes(sort_by)) {
+    return Promise.reject({ status: 400, message: "invalid sort by request" });
+  }
+
+  let queryStr = `SELECT reviews.owner, title, 
+  reviews.review_id, category, review_img_url, 
+  reviews.created_at, reviews.votes, 
+  COUNT(comments.review_id) ::INT AS comment_count
   FROM reviews
   LEFT JOIN comments
-  ON reviews.review_id = comments.review_id
-  GROUP BY reviews.review_id
-  ORDER BY reviews.created_at DESC
-  `;
+  ON reviews.review_id = comments.review_id `;
 
-  const allReviews = await db.query(queryStr);
+  //VALIDATE CATEGORY
+  if (category) {
+    if (!isNaN(category)) {
+      return Promise.reject({
+        status: 400,
+        message: "invalid category request",
+      });
+    }
+    const categoryCheck = await db.query(`SELECT slug FROM categories`);
+    const categories = categoryCheck.rows.map((element) => element.slug);
+    if (!categories.includes(category)) {
+      return Promise.reject({ status: 404, message: "category not found" });
+    }
+    queryStr += `WHERE category = $1`;
+    valuesArr.push(category);
+  }
+
+  queryStr += `GROUP BY reviews.review_id 
+    ORDER BY reviews.${sort_by} `;
+
+  //VALIDATE ORDER_BY
+  if (!["ASC", "DESC"].includes(order_by.toUpperCase())) {
+    return Promise.reject({ status: 400, message: "invalid order by request" });
+  }
+  queryStr += `${order_by}`;
+
+  const allReviews = await db.query(queryStr, valuesArr);
   return allReviews.rows;
 };
 

@@ -51,13 +51,91 @@ describe("GET /api/reviews", () => {
         });
       });
   });
-
-  test("200: return object's array is sorted by date, in descending order", () => {
+  test("200: return object's array default sorting is by date, in descending order", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
       .then(({ body: { reviews } }) => {
         expect(reviews).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("200: return object's array can be sorted according to client query, defaults to descending", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=owner")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("owner", { descending: true });
+      });
+  });
+  test("200: return object's array can be ordered according to client query", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=owner&order_by=asc")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("owner", { ascending: true });
+      });
+  });
+  test("200: return object's array can be filtered according to client query", () => {
+    return request(app)
+      .get("/api/reviews?category=social+deduction")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        reviews.forEach((review) => {
+          expect(review.category).toBe("social deduction");
+        });
+      });
+  });
+  test("200: return object's array can be sorted, ordered and filtered according to client query", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=votes&order=desc&category=social+deduction")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("votes", { descending: true });
+        reviews.forEach((review) => {
+          expect(review.category).toBe("social deduction");
+        });
+      });
+  });
+  test("200: return object is empty when passed an existing category with no reviews", () => {
+    return request(app)
+      .get("/api/reviews?category=children%27s+games")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toEqual([]);
+      });
+  });
+
+  test("400: returns an error message when passed an invalid sort_by query", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=bearcuts")
+      .expect(400)
+      .then(({ text }) => {
+        expect(text).toBe("invalid sort by request");
+      });
+  });
+  test("400: returns an error message when passed an invalid order_by query", () => {
+    return request(app)
+      .get("/api/reviews?order_by=bread")
+      .expect(400)
+      .then(({ text }) => {
+        expect(text).toBe("invalid order by request");
+      });
+  });
+  test("400: returns an error message when passed an invalid category", () => {
+    return request(app)
+      .get("/api/reviews?category=3")
+      .expect(400)
+      .then(({ text }) => {
+        expect(text).toBe("invalid category request");
+      });
+  });
+
+  test("404: returns an error message when passed a non-existent category", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=title&category=palm+oil")
+      .expect(404)
+      .then(({ text }) => {
+        expect(text).toBe("category not found");
       });
   });
 });
