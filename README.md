@@ -1,8 +1,8 @@
-# Northcoders House of Games API
+# AD Games API
 
 ## Cloning this repo
 
-In your local environment, navigate to your chosen directory and use the following command:
+In your local environment, navigate to your chosen directory and use the following commands to create a local copy of this repo:
 
 ``` git clone https://github.com/alexdevdavis/be-games.git ```
 

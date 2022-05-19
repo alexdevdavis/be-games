@@ -1,9 +1,7 @@
-const fs = require("fs/promises");
-const path = require("path");
+const { fetchEndpoints } = require("../models/endpoints.model");
 
 exports.getEndpoints = (req, res, next) => {
-  return fs
-    .readFile(path.resolve(__dirname, "../endpoints.json"))
+  fetchEndpoints()
     .then((unparsedEndpoints) => {
       const endpoints = JSON.parse(unparsedEndpoints);
       res.status(200).send({ endpoints });
