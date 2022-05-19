@@ -9,6 +9,27 @@ require("jest-sorted");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
+describe("GET /api", () => {
+  test("Returns an object detailing all available endpoints in api", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { endpoints } }) => {
+        const endpointKeys = Object.keys(endpoints);
+        expect(endpointKeys).toHaveLength(9);
+        for (let i = 0; i < endpointKeys.length; i++) {
+          expect(endpoints[endpointKeys[i]]).toEqual(
+            expect.objectContaining({
+              description: expect.any(String),
+              queries: expect.any(Array),
+              exampleResponse: expect.any(Object),
+            })
+          );
+        }
+      });
+  });
+});
+
 describe("GET /api/categories", () => {
   test("200: returns an array of category objects", () => {
     return request(app)
