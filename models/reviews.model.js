@@ -28,6 +28,12 @@ exports.fetchAllReviews = async (
 
   //VALIDATE CATEGORY
   if (category) {
+    if (!isNaN(category)) {
+      return Promise.reject({
+        status: 400,
+        message: "invalid category request",
+      });
+    }
     const categoryCheck = await db.query(`SELECT slug FROM categories`);
     const categories = categoryCheck.rows.map((element) => element.slug);
     if (!categories.includes(category)) {
