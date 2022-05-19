@@ -35,7 +35,7 @@ AD Games API is built with node.js and npm, so the following node packages will 
 
 ### Development Dependencies
 
-To facilitate Test-Driven Development, 
+To facilitate Test-Driven Development
 
 - Jest:  ```npm i -D jest```
 - Jest-sorted:  ```npm i -D jest-sorted```
