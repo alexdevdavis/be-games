@@ -411,6 +411,33 @@ describe("GET /api/users", () => {
   });
 });
 
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: returns only a status code upon successful deletion", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("404: returns an error message if no comment matching comment_id is found", () => {
+    return request(app)
+      .delete("/api/comments/1984")
+      .expect(404)
+      .then(({ text }) => {
+        expect(text).toEqual("delete unsuccessful: comment not found");
+      });
+  });
+  test("400: returns an error message if comment_id in request is not a number", () => {
+    return request(app)
+      .delete("/api/comments/wibble")
+      .expect(400)
+      .then(({ text }) => {
+        expect(text).toEqual("invalid comment id request");
+      });
+  });
+});
+
 describe("404: path not found", () => {
   test("404: returns an error message when client accesses an invalid endpoint", () => {
     return request(app)
