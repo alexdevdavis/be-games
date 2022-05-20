@@ -71,7 +71,7 @@ Now you are able to use a browser, or other software to make http requests to th
 
 ## Test-Driven Development
 
-In building this API, I have followed the principles of test-driven development. Using Supertest in conjunction with Jest enables all seeding and listening to be managed within the test file ```./__tests__/games.test.js```.
+In building this API, I have followed the principles of test-driven development. Using Supertest in conjunction with Jest enables all seeding of test data and listening to be managed within the test file ```./__tests__/games.test.js```.
 Therefore, to run the test suite, simply type the following command: ```npm t```.
 
 ## Software Requirements
