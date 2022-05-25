@@ -1,5 +1,9 @@
+//require and use Express
 const express = require("express");
-const { getCategories } = require("./controllers/categories.controller");
+const app = express();
+app.use(express.json());
+
+
 const { getAllUsers } = require("./controllers/users.controller");
 const {
   getAllReviews,
@@ -11,11 +15,14 @@ const {
 const { deleteCommentById } = require("./controllers/comments.controller");
 const { getEndpoints } = require("./controllers/endpoints.controller");
 
-const app = express();
-app.use(express.json());
+// require API router
+const apiRouter = require("./routes/api-router");
+
+// use api router for all endpoints beginning with '/api'
+app.use("/api", apiRouter);
 
 //CATEGORIES
-app.get("/api/categories", getCategories);
+
 
 //REVIEWS
 app.get("/api/reviews", getAllReviews);
@@ -24,8 +31,7 @@ app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 app.patch("/api/reviews/:review_id", patchReviewVotesById);
 app.post("/api/reviews/:review_id/comments", postCommentByReviewId);
 
-// ENDPOINTS
-app.get("/api", getEndpoints);
+
 
 //USERS
 app.get("/api/users", getAllUsers);
@@ -59,4 +65,4 @@ app.use((err, req, res, next) => {
   res.status(500).send({ msg: "internal server error" });
 });
 
-module.exports = app;
+module.exports = { app };
