@@ -1,8 +1,9 @@
-//require and use Express
 const express = require("express");
-const app = express();
-app.use(express.json());
+const cors = require("cors");
 
+const app = express();
+app.use(cors());
+app.use(express.json());
 
 const { getAllUsers } = require("./controllers/users.controller");
 const {
@@ -23,15 +24,12 @@ app.use("/api", apiRouter);
 
 //CATEGORIES
 
-
 //REVIEWS
 app.get("/api/reviews", getAllReviews);
 app.get("/api/reviews/:review_id", getReviewById);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 app.patch("/api/reviews/:review_id", patchReviewVotesById);
 app.post("/api/reviews/:review_id/comments", postCommentByReviewId);
-
-
 
 //USERS
 app.get("/api/users", getAllUsers);
