@@ -30,7 +30,7 @@ describe("GET /api", () => {
   });
 });
 
-describe("GET /api/categories", () => {
+describe("GET /categories", () => {
   test("200: returns an array of category objects", () => {
     return request(app)
       .get("/api/categories")
