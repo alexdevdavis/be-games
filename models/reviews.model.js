@@ -3,9 +3,9 @@ const format = require("pg-format");
 const { fetchAllUsers } = require("./users.model");
 
 exports.fetchAllReviews = async (
+  category,
   sort_by = "created_at",
-  order_by = "DESC",
-  category
+  order_by = "DESC"
 ) => {
   const valuesArr = [];
   //VALIDATE SORT_BY
