@@ -123,7 +123,6 @@ describe("GET /api/reviews", () => {
       .expect(200)
       .then(({ body: { reviews } }) => {
         expect(reviews).toBeSortedBy("comment_count", { descending: true });
-        console.log(reviews);
       });
   });
   test("200: return object is empty when passed an existing category with no reviews", () => {
