@@ -13,8 +13,8 @@ exports.fetchAllReviews = async (
     `SELECT column_name FROM INFORMATION_SCHEMA. COLUMNS WHERE TABLE_NAME = 'reviews'`
   );
   const headerArray = validSorts.rows.map((element) => element.column_name);
-
-  if (!headerArray.includes(sort_by || "comment_count")) {
+  headerArray.push("comment_count");
+  if (!headerArray.includes(sort_by)) {
     return Promise.reject({ status: 400, message: "invalid sort by request" });
   }
 
