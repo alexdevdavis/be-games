@@ -13,6 +13,7 @@ exports.fetchAllReviews = async (
     `SELECT column_name FROM INFORMATION_SCHEMA. COLUMNS WHERE TABLE_NAME = 'reviews'`
   );
   const headerArray = validSorts.rows.map((element) => element.column_name);
+    headerArray.push("comment_count")
 
   if (!headerArray.includes(sort_by)) {
     return Promise.reject({ status: 400, message: "invalid sort by request" });
@@ -43,8 +44,8 @@ exports.fetchAllReviews = async (
     valuesArr.push(category);
   }
 
-  queryStr += `GROUP BY reviews.review_id 
-    ORDER BY reviews.${sort_by} `;
+  queryStr += "GROUP BY reviews.review_id" 
+  queryStr += (sort_by==="comment_count") ? ` ORDER BY COUNT(comments.review_id) ` : ` ORDER BY reviews.${sort_by} `;
 
   //VALIDATE ORDER_BY
   if (!["ASC", "DESC"].includes(order_by.toUpperCase())) {
