@@ -44,7 +44,11 @@ exports.fetchAllReviews = async (
   }
 
   queryStr += `GROUP BY reviews.review_id 
-    ORDER BY ${sort_by === "comment_count" ? "COUNT(comments.review_id" : `reviews.${sort_by} `};
+    ORDER BY ${
+      sort_by === "comment_count"
+        ? "COUNT(comments.review_id"
+        : `reviews.${sort_by}`
+    }`;
 
   //VALIDATE ORDER_BY
   if (!["ASC", "DESC"].includes(order_by.toUpperCase())) {
