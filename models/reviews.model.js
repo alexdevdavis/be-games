@@ -14,7 +14,7 @@ exports.fetchAllReviews = async (
   );
   const headerArray = validSorts.rows.map((element) => element.column_name);
 
-  if (!headerArray.includes(sort_by)) {
+  if (!headerArray.includes(sort_by || "comment_count")) {
     return Promise.reject({ status: 400, message: "invalid sort by request" });
   }
 
