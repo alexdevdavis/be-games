@@ -14,7 +14,7 @@ exports.fetchAllReviews = async (
   );
   const headerArray = validSorts.rows.map((element) => element.column_name);
 
-  if (!headerArray.includes(sort_by) || sort_by !== "comment_count") {
+  if (!headerArray.includes(sort_by)) {
     return Promise.reject({ status: 400, message: "invalid sort by request" });
   }
 
@@ -44,11 +44,7 @@ exports.fetchAllReviews = async (
   }
 
   queryStr += `GROUP BY reviews.review_id 
-    ORDER BY ${
-      sort_by === "comment_count"
-        ? "COUNT(comments.review_id"
-        : `reviews.${sort_by}`
-    }`;
+    ORDER BY reviews.${sort_by}`;
 
   //VALIDATE ORDER_BY
   if (!["ASC", "DESC"].includes(order_by.toUpperCase())) {
