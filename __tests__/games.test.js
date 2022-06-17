@@ -117,6 +117,15 @@ describe("GET /api/reviews", () => {
         });
       });
   });
+  test("200: return object's array can be sorted by comment_count", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=comment_count")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("comment_count", { descending: true });
+        console.log(reviews);
+      });
+  });
   test("200: return object is empty when passed an existing category with no reviews", () => {
     return request(app)
       .get("/api/reviews?category=children%27s+games")
