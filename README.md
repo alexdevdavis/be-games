@@ -24,10 +24,7 @@ In your local environment, navigate to your chosen directory and use the followi
 
 ### Changing directory to the new folder
 
-```
-
-cd <Folder path>
-```
+``` cd <Folder path> ```
 
 ## Installing Dependencies
 
