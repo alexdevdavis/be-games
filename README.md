@@ -78,7 +78,7 @@ To seed the local database with development data, enter into the CLI: ```npm run
 
 Then, to set the app listening for http requests, ```npm start```
 
-Now you are able to use a browser, or other software to make http requests to the api at <http://localhost:9090/api>
+Now you are able to use a browser, or other software to make http requests to the api at <http://localhost:9090/api>. The root endpoint returns a JSON object of all availably endpoints, with examples of any returned data, parametric endpoints or URL query capability. 
 
 ## Test-Driven Development
 
