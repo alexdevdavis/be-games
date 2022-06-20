@@ -22,18 +22,32 @@ In your local environment, navigate to your chosen directory and use the followi
 
 ``` git clone https://github.com/alexdevdavis/be-games.git ```
 
+### Changing directory to the new folder
+
+```
+
+cd <Folder path>
+```
+
 ## Installing Dependencies
 
-AD Games API is built with node.js and npm, so the following node packages will need to be installed:
+AD Games API is built with Node.js and npm, so the following node packages will need to be installed:
 
-### Functional Dependencies
+### Blanket install
+To install all required packages
+```
+npm install
+```
+### Breakdown of Package Dependencies
+
+#### Functional Dependencies
 
 - Express:  ```npm i express```
 - PostgreSQL:  ```npm i pg```
 - PostgreSQL Formatter:  ```npm i pg-format```
 - Dotenv: ```npm i dotenv```
 
-### Development Dependencies
+#### Development Dependencies
 
 To facilitate Test-Driven Development
 
@@ -41,7 +55,7 @@ To facilitate Test-Driven Development
 - Jest-sorted:  ```npm i -D jest-sorted```
 - Supertest:  ```npm i -D supertest```
 
-### Optional install
+#### Optional install
 
 - Nodemon: ```npm i -D nodemon```
 Use Nodemon to send custom http requests with Postman, Insomnia or equivalent software, on ```localhost:9090/api```
